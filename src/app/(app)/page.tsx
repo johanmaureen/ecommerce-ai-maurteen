@@ -1,7 +1,8 @@
+import { ALL_CATEGORIES_QUERY } from "@/lib/sanity/queries/categories";
 import { sanityFetch } from "@/sanity/lib/live";
 export default async function Home() {
   const categories = await sanityFetch({
-    query: '*[_type == "category"]',
+    query: ALL_CATEGORIES_QUERY,
   });
   console.log(categories);
 
