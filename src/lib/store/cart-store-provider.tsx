@@ -50,6 +50,7 @@ export const CartStoreProvider = ({
   }, []);
 
   return (
+    // eslint-disable-next-line react-hooks/refs
     <CartStoreContext.Provider value={storeRef.current}>
       {children}
     </CartStoreContext.Provider>
