@@ -3,7 +3,7 @@ import { AddToCartButton } from "@/components/app/AddToCartButton";
 import { AskAISimilarButton } from "@/components/app/AskAISimilarButton";
 import { StockBadge } from "@/components/app/StockBadge";
 import { formatPrice } from "@/lib/utils";
-import type { PRODUCT_BY_SLUG_QUERYResult } from "@/sanity.types";
+import type { PRODUCT_BY_SLUG_QUERYResult } from "../../../sanity.types";
 
 interface ProductInfoProps {
   product: NonNullable<PRODUCT_BY_SLUG_QUERYResult>;

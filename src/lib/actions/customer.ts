@@ -9,7 +9,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-11-17.clover",
+  apiVersion: "2025-12-15.clover",
 });
 
 /**
@@ -19,7 +19,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function getOrCreateStripeCustomer(
   email: string,
   name: string,
-  clerkUserId: string
+  clerkUserId: string,
 ): Promise<{ stripeCustomerId: string; sanityCustomerId: string }> {
   // First, check if customer already exists in Sanity
   const existingCustomer = await client.fetch(CUSTOMER_BY_EMAIL_QUERY, {

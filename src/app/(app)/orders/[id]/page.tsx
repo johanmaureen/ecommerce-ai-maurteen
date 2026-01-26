@@ -6,7 +6,7 @@ import { ArrowLeft, CreditCard, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { sanityFetch } from "@/sanity/lib/live";
 import { ORDER_BY_ID_QUERY } from "@/lib/sanity/queries/orders";
-import { getOrderStatus } from "@/lib/constants/orderStatus";
+import { getOrderStatus } from "@/lib/orderStatus";
 import { formatPrice, formatDate } from "@/lib/utils";
 
 export const metadata = {
