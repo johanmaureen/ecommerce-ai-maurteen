@@ -1,133 +1,31 @@
 "use client";
 
-import { Suspense, useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  useDocuments,
-  useApplyDocumentActions,
-  createDocumentHandle,
-  createDocument,
-} from "@sanity/sdk-react";
 import { Plus, Package, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Table, TableBody } from "@/components/ui/table";
-import {
-  ProductRow,
-  ProductRowSkeleton,
-  AdminSearch,
-  useProductSearchFilter,
-  ProductTableHeader,
-} from "@/components/admin";
-
-interface ProductListContentProps {
-  filter?: string;
-  onCreateProduct: () => void;
-  isCreating: boolean;
-}
-
-function ProductListContent({
-  filter,
-  onCreateProduct,
-  isCreating,
-}: ProductListContentProps) {
-  const {
-    data: products,
-    hasMore,
-    loadMore,
-    isPending,
-  } = useDocuments({
-    documentType: "product",
-    filter,
-    orderings: [
-      { field: "stock", direction: "asc" },
-      { field: "name", direction: "asc" },
-    ],
-    batchSize: 20,
-  });
-
-  if (!products || products.length === 0) {
-    return (
-      <EmptyState
-        icon={Package}
-        title={filter ? "No products found" : "No products yet"}
-        description={
-          filter
-            ? "Try adjusting your search terms."
-            : "Get started by adding your first product."
-        }
-        action={
-          !filter
-            ? {
-                label: "Add Product",
-                onClick: onCreateProduct,
-                disabled: isCreating,
-                icon: isCreating ? Loader2 : Plus,
-              }
-            : undefined
-        }
-      />
-    );
-  }
-
-  return (
-    <>
-      <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <Table>
-          <ProductTableHeader />
-          <TableBody>
-            {products.map((handle) => (
-              <ProductRow key={handle.documentId} {...handle} />
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      {hasMore && (
-        <div className="mt-4 flex justify-center">
-          <Button
-            variant="outline"
-            onClick={() => loadMore()}
-            disabled={isPending}
-          >
-            {isPending ? "Loading..." : "Load More"}
-          </Button>
-        </div>
-      )}
-    </>
-  );
-}
-
-function ProductListSkeleton() {
-  return (
-    <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-      <Table>
-        <ProductTableHeader />
-        <TableBody>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <ProductRowSkeleton key={i} />
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
+import { useAdminDocumentActions } from "@/hooks/useAdminDocumentActions";
 
 function InventoryContent() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
-  const { filter, isSearching } = useProductSearchFilter(searchQuery);
-  const apply = useApplyDocumentActions();
+  const { createDocument } = useAdminDocumentActions();
 
   const handleCreateProduct = () => {
     startTransition(async () => {
-      const newDocHandle = createDocumentHandle({
-        documentId: crypto.randomUUID(),
-        documentType: "product",
-      });
-      await apply(createDocument(newDocHandle));
-      router.push(`/admin/inventory/${newDocHandle.documentId}`);
+      try {
+        const newProduct = await createDocument("product", {
+          name: "New Product",
+          slug: {
+            _type: "slug",
+            current: `product-${Date.now()}`,
+          },
+        });
+        router.push(`/admin/inventory/${newProduct._id}`);
+      } catch (error) {
+        console.error("Failed to create product:", error);
+      }
     });
   };
 
@@ -157,26 +55,16 @@ function InventoryContent() {
         </Button>
       </div>
 
-      {/* Search */}
-      <AdminSearch
-        placeholder="Search products..."
-        value={searchQuery}
-        onChange={setSearchQuery}
-        className="w-full sm:max-w-sm"
-      />
-
       {/* Product List */}
-      {isSearching ? (
-        <ProductListSkeleton />
-      ) : (
-        <Suspense fallback={<ProductListSkeleton />}>
-          <ProductListContent
-            filter={filter}
-            onCreateProduct={handleCreateProduct}
-            isCreating={isPending}
-          />
-        </Suspense>
-      )}
+      <EmptyState
+        icon={Package}
+        title="Inventory Feature Coming Soon"
+        description="Product editing is being migrated. Please use the Sanity Studio to manage products."
+        action={{
+          label: "Open Sanity Studio",
+          onClick: () => router.push("/studio"),
+        }}
+      />
     </div>
   );
 }
