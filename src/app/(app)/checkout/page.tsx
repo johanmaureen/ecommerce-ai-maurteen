@@ -1,9 +1,6 @@
-import { CheckoutClient } from "./CheckoutClient";
+"use client";
 
-export const metadata = {
-  title: "Checkout | Furniture Shop",
-  description: "Complete your purchase",
-};
+import { CheckoutClient } from "./CheckoutClient";
 
 export default function CheckoutPage() {
   return <CheckoutClient />;

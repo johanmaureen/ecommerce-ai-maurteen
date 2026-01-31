@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
-import { SuccessClient } from "./SuccessClient";
 import { getCheckoutSession } from "@/lib/actions/checkout";
+import { SuccessWrapper } from "./SuccessWrapper";
+
+export const revalidate = 0;
 
 export const metadata = {
   title: "Order Confirmed | Furniture Shop",
@@ -25,5 +27,5 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     redirect("/");
   }
 
-  return <SuccessClient session={result.session} />;
+  return <SuccessWrapper session={result.session} />;
 }
